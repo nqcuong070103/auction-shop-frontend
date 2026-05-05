@@ -1,8 +1,8 @@
 package com.frontendauction;
 
-import com.frontendauction.auth.AuthService;
-import com.frontendauction.auth.HttpAuthService;
-import com.frontendauction.auth.MockAuthService;
+import com.frontendauction.service.AuthService;
+import com.frontendauction.service.HttpAuthService;
+import com.frontendauction.service.MockAuthService;
 import com.frontendauction.controller.logincontroller.LoginController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

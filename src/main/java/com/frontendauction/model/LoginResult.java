@@ -1,4 +1,4 @@
-package com.frontendauction.auth;
+package com.frontendauction.model;
 
 public record LoginResult(boolean success, String token, String errorMessage) {
 

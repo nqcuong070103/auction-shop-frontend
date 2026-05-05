@@ -1,7 +1,8 @@
-package com.frontendauction.auth;
+package com.frontendauction.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.frontendauction.model.LoginResult;
 
 import java.net.URI;
 import java.net.http.HttpClient;
