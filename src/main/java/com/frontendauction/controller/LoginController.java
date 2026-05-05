@@ -1,4 +1,4 @@
-package com.frontendauction.controller.logincontroller;
+package com.frontendauction.controller;
 
 import com.frontendauction.auth.AuthService;
 import com.frontendauction.auth.HttpAuthService;
