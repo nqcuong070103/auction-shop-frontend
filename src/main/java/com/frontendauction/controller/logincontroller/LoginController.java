@@ -1,7 +1,8 @@
 package com.frontendauction.controller.logincontroller;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.frontendauction.auth.AuthService;
+import com.frontendauction.auth.HttpAuthService;
+import com.frontendauction.auth.LoginResult;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -9,19 +10,17 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-
 public class LoginController {
 
-    private static final String LOGIN_URL = "http://localhost:1234/auth/login";
+    private final AuthService authService;
 
-    private final HttpClient httpClient = HttpClient.newHttpClient();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    public LoginController() {
+        this(new HttpAuthService());
+    }
+
+    public LoginController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @FXML
     private TextField usernameField;
@@ -87,51 +86,37 @@ public class LoginController {
 
         setLoading(true);
 
-        try {
-            String body = objectMapper.writeValueAsString(
-                    Map.of("username", username, "password", password)
-            );
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(LOGIN_URL))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8))
-                    .build();
-
-            httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8))
-                    .thenAccept(response -> Platform.runLater(() -> handleResponse(response)))
-                    .exceptionally(exception -> {
-                        Platform.runLater(() -> {
-                            setLoading(false);
-                            showError("Can't connected to server");
-                        });
-                        return null;
+        authService.login(username, password)
+                .thenAccept(result -> Platform.runLater(() -> handleResponse(result)))
+                .exceptionally(exception -> {
+                    Platform.runLater(() -> {
+                        setLoading(false);
+                        showError(resolveErrorMessage(exception));
                     });
-
-        } catch (Exception exception) {
-            setLoading(false);
-            showError("Can't created login request");
-        }
+                    return null;
+                });
     }
 
-    private void handleResponse(HttpResponse<String> response) {
+    private void handleResponse(LoginResult result) {
         setLoading(false);
 
-        try {
-            JsonNode json = objectMapper.readTree(response.body());
-
-            if (response.statusCode() == 201) {
-                String token = json.path("token").asText("");
-                hideError();
-                System.out.println("Login success. Token = " + token);
-                return;
-            }
-
-            String errorMessage = json.path("error").asText("Login failed!");
-            showError(errorMessage);
-
-        } catch (Exception exception) {
-            showError("Response from server invalid");
+        if (result.success()) {
+            hideError();
+            System.out.println("Login success. Token = " + result.token());
+            return;
         }
+
+        showError(result.errorMessage());
+    }
+
+    private String resolveErrorMessage(Throwable exception) {
+        Throwable cause = exception.getCause() == null ? exception : exception.getCause();
+        String message = cause.getMessage();
+
+        if (message == null || message.isBlank()) {
+            return "Can't connected to server";
+        }
+
+        return message;
     }
 }
