@@ -1,4 +1,6 @@
-package com.frontendauction.auth;
+package com.frontendauction.service;
+
+import com.frontendauction.model.LoginResult;
 
 import java.util.concurrent.CompletableFuture;
 
