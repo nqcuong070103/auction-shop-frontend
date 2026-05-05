@@ -9,7 +9,7 @@ public class MockAuthService implements AuthService {
     public CompletableFuture<LoginResult> login(String username, String password) {
         return CompletableFuture.supplyAsync(
                 () -> authenticate(username, password),
-                CompletableFuture.delayedExecutor(900, TimeUnit.MILLISECONDS)
+                CompletableFuture.delayedExecutor(500, TimeUnit.MILLISECONDS)
         );
     }
 
