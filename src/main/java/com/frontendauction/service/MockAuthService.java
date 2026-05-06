@@ -1,6 +1,7 @@
 package com.frontendauction.service;
 
 import com.frontendauction.model.LoginResult;
+import com.frontendauction.model.SignupResult;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -11,7 +12,15 @@ public class MockAuthService implements AuthService {
     public CompletableFuture<LoginResult> login(String username, String password) {
         return CompletableFuture.supplyAsync(
                 () -> authenticate(username, password),
-                CompletableFuture.delayedExecutor(900, TimeUnit.MILLISECONDS)
+                CompletableFuture.delayedExecutor(500, TimeUnit.MILLISECONDS)
+        );
+    }
+
+    @Override
+    public CompletableFuture<SignupResult> signup(String username, String password) {
+        return CompletableFuture.supplyAsync(
+                () -> register(username, password),
+                CompletableFuture.delayedExecutor(500, TimeUnit.MILLISECONDS)
         );
     }
 
@@ -25,5 +34,13 @@ public class MockAuthService implements AuthService {
         }
 
         return LoginResult.failure("Invalid username or password in mock mode");
+    }
+
+    private SignupResult register(String username, String password) {
+        if ("admin_01".equals(username) || "seller_01".equals(username)) {
+            return SignupResult.failure("Username already exists");
+        }
+
+        return SignupResult.success("User created");
     }
 }
