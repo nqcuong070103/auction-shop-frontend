@@ -1,7 +1,9 @@
 package com.frontendauction.controller;
 
+import com.frontendauction.model.SignupResult;
 import com.frontendauction.service.AuthService;
 import com.frontendauction.service.HttpAuthService;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -76,6 +78,7 @@ public class SignupController {
         signupButton.setDisable(loading); // Lock Button Sign Up tranh bam nhieu lan
         signupButton.setText(loading ? "Signing up..." : "Sign Up");
     }
+
     @FXML
     private void handleSignup() {
         String username = usernameField.getText().trim();
@@ -89,17 +92,55 @@ public class SignupController {
         }
 
         setLoading(true);
-        System.out.println("Signup valid. Username: " + username);
-        setLoading(false);
+
+        authService.signup(username, password)
+                .thenAccept(result -> Platform.runLater(() -> handleResponse(result)))
+                .exceptionally(exception -> {
+                    Platform.runLater(() -> {
+                        setLoading(false);
+                        showError(resolveErrorMessage(exception));
+                    });
+                    return null;
+                });
     }
+
+    private void handleResponse(SignupResult result) {
+        setLoading(false);
+
+        if (result.success()) {
+            hideError();
+            System.out.println("Signup success. Message = " + result.message());
+
+            try {
+                handleBacktoLogin();
+            } catch (IOException exception) {
+                showError("Signup success but cannot open login");
+            }
+            return;
+        }
+
+        showError(result.errorMessage());
+    }
+
+    private String resolveErrorMessage(Throwable exception) {
+        Throwable cause = exception.getCause() == null ? exception : exception.getCause();
+        String message = cause.getMessage();
+
+        if (message == null || message.isBlank()) {
+            return "Can't connected to server";
+        }
+
+        return message;
+    }
+
     @FXML
     private void handleBacktoLogin() throws IOException {
         FXMLLoader loader = new FXMLLoader(
                 Objects.requireNonNull(getClass().getResource("/com/frontendauction/login.fxml")));
 
-        loader.setControllerFactory(type -> {//Tu tao controller truyen cung AuthService sang signup Scene
-            if (type == SignupController.class) {//Neu FXMLLoader can tao SignupController
-                return new SignupController(authService);//Tao SignupController va truyen cung authService dang dung o login
+        loader.setControllerFactory(type -> {//Tu tao controller truyen cung AuthService sang login Scene
+            if (type == LoginController.class) {//Neu FXMLLoader can tao LoginController
+                return new LoginController(authService);//Tao LoginController va truyen cung authService dang dung o signup
             }
 
             try {//Neu la Controller khac
