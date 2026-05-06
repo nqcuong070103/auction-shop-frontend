@@ -15,8 +15,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class HttpAuthService implements AuthService {
 
-    private static final String LOGIN_URL = "http://localhost:1234/auth/login";
-    private static final String REGISTER_URL = "http://localhost:1234/auth/register";
+    private static final String LOGIN_URL = "http://103.75.182.151:1234/auth/login";
+    private static final String REGISTER_URL = "http://103.75.182.151:1234/auth/register";
 
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;

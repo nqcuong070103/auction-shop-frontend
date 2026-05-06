@@ -38,7 +38,7 @@ public class MockAuthService implements AuthService {
 
     private SignupResult register(String username, String password) {
         if ("admin_01".equals(username) || "seller_01".equals(username)) {
-            return SignupResult.failure("username already exists");
+            return SignupResult.failure("Username already exists");
         }
 
         return SignupResult.success("User created");
