@@ -22,12 +22,17 @@
             <Label layoutX="161.0" layoutY="153.0" text="Username" />
             <Label layoutX="161.0" layoutY="204.0" text="Password" />
             <Label fx:id="errorLabel" alignment="CENTER" layoutX="85.0" layoutY="241.0" prefHeight="18.0" prefWidth="426.0" textFill="#ff1818" visible="false" />
-            <Button fx:id="loginButton" defaultButton="true" layoutX="270.0" layoutY="274.0" mnemonicParsing="false" onAction="#handleLogin" text="Login">
+            <Button fx:id="loginButton" defaultButton="true" layoutX="257.0" layoutY="259.0" mnemonicParsing="false" onAction="#handleLogin" prefHeight="31.0" prefWidth="82.0" text="Login">
                <font>
                   <Font size="15.0" />
                </font>
             </Button>
             <PasswordField fx:id="passwordField" layoutX="234.0" layoutY="200.0" promptText="Type your Password" />
+            <Button fx:id="signupButton" layoutX="257.0" layoutY="309.0" mnemonicParsing="false" onAction="#handleSignup" prefHeight="31.0" prefWidth="82.0" text="Sign Up">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Button>
          </children>
       </AnchorPane>
    </children>
