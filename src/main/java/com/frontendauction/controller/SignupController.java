@@ -95,6 +95,7 @@ public class SignupController {
 
         authService.signup(username, password)
                 .thenAccept(result -> Platform.runLater(() -> handleResponse(result)))
+                //Platform.runLater dam bao handleResponse phai dien ra tren Main Thread UI
                 .exceptionally(exception -> {
                     Platform.runLater(() -> {
                         setLoading(false);
